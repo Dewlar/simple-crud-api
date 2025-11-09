@@ -2,20 +2,7 @@ import { ServerResponse } from 'http';
 import { validate } from 'uuid';
 import { User } from '../models/user.model';
 
-export let mockUsers: User[] = [
-  {
-    id: '1',
-    username: 'test1',
-    age: 22,
-    hobbies: ['sumo', 'run', 'sleep'],
-  },
-  {
-    id: '2',
-    username: 'test2',
-    age: 33,
-    hobbies: ['eat', 'listen music'],
-  },
-];
+export let mockUsers: User[] = [];
 
 export function isUserType(obj: any): obj is User {
   return typeof obj === 'object' &&
