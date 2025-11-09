@@ -31,20 +31,25 @@ export function isUserValid(res: ServerResponse, userId: string): boolean {
   const userIds = mockUsers.map((user) => user.id);
 
   if (!validate(userId)) {
-    respondWithError(res, 400, 'UserId is not valid');
+    respondWithErrorMessage(res, 400, 'UserId is not valid');
     return false;
   }
 
   const userExists = userIds.some(id => id === userId)
   if (!userExists) {
-    respondWithError(res, 404, "User with such id doesn't exist");
+    respondWithErrorMessage(res, 404, "User with such id doesn't exist");
     return false;
   }
 
   return true;
 }
 
-function respondWithError(res: ServerResponse, statusCode: number, message: string) {
+export function respondWithErrorMessage(res: ServerResponse, statusCode: number, message: string) {
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message }));
+}
+
+export function respondWithData(res: ServerResponse, statusCode: number, data: User | User[]) {
+  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(data));
 }

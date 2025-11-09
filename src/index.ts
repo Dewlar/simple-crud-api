@@ -1,7 +1,7 @@
 import http, { IncomingMessage, ServerResponse } from 'http';
 import { config } from 'dotenv';
 import { getParsedBody } from './helpers/requests.helper.js';
-import { isUserType, isUserValid, mockUsers } from './helpers/user.helper.js';
+import { isUserType, isUserValid, mockUsers, respondWithData, respondWithErrorMessage } from './helpers/user.helper.js';
 import { User } from './models/user.model.js';
 import { v4 as uniqId } from 'uuid';
 
@@ -12,9 +12,9 @@ const PORT = process.env.PORT || 30332;
 const server = http.createServer(
   async (req: IncomingMessage, res: ServerResponse) => {
     try {
-      if (req.method === 'GET' && req.url === '/users') {
-        getUsers(res, mockUsers);
-      } else if (req.method === 'POST' && req.url === '/users') {
+      if (req.method === 'GET' && (req.url === '/api/users' || req.url === '/api/users/')) {
+        respondWithData(res, 200, mockUsers);
+      } else if (req.method === 'POST' && (req.url === '/api/users' || req.url === '/api/users/')) {
         const body = await getParsedBody(req);
 
         if (isUserType(body)) {
@@ -24,28 +24,20 @@ const server = http.createServer(
           };
           mockUsers.push(newUser);
 
-          res.writeHead(201, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(newUser));
+          respondWithData(res, 201, newUser);
         } else {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(
-            JSON.stringify({
-              message:
-                'Request body does not contain the required fields.',
-            })
-          );
+          respondWithErrorMessage(res, 400, 'Request body does not contain the required fields.');
         }
-      } else if (req.method === 'GET' && req.url?.startsWith('/users/')) {
+      } else if (req.method === 'GET' && req.url?.startsWith('/api/users/')) {
         const path = req.url;
-        const userId = path.replace('/users/', '');
+        const userId = path.replace('/api/users/', '');
         if (isUserValid(res, userId)) {
           const user = mockUsers.find((currUser) => currUser.id === userId);
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(user));
+          respondWithData(res, 200, user as User);
         }
-      } else if (req.method === 'PUT' && req.url?.startsWith('/users/')) {
+      } else if (req.method === 'PUT' && req.url?.startsWith('/api/users/')) {
         const path = req.url;
-        const userId = path.replace('/users/', '');
+        const userId = path.replace('/api/users/', '');
         if (isUserValid(res, userId)) {
           const userIndex = mockUsers.findIndex((currUser) => currUser.id === userId);
 
@@ -57,21 +49,14 @@ const server = http.createServer(
               ...body,
             };
 
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(mockUsers[userIndex]));
+            respondWithData(res, 200, mockUsers[userIndex]);
           } else {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(
-              JSON.stringify({
-                message:
-                  'Request body does not contain the required fields or types of the fields do not match the expectations.',
-              })
-            );
+            respondWithErrorMessage(res, 400, 'Request body does not contain the required fields or types of the fields do not match the expectations.');
           }
         }
-      } else if (req.method === 'DELETE' && req.url?.startsWith('/users/')) {
+      } else if (req.method === 'DELETE' && req.url?.startsWith('/api/users/')) {
         const path = req.url;
-        const userId = path.replace('/users/', '');
+        const userId = path.replace('/api/users/', '');
         if (isUserValid(res, userId)) {
           const userIndex = mockUsers.findIndex((user) => user.id === userId);
           if (userIndex !== -1) {
@@ -81,29 +66,14 @@ const server = http.createServer(
           }
         }
       } else {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(
-          JSON.stringify({
-            message: `Such resource not found. Please check the URL`,
-          })
-        );
+        respondWithErrorMessage(res, 404, 'Such resource not found. Please check the URL');
       }
     } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(
-        JSON.stringify({
-          message:
-            'Internal server error.',
-        })
-      );
+      respondWithErrorMessage(res, 500, 'Internal server error.');
     }
   }
 );
 
-function getUsers(res: ServerResponse, users: User[]) {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(users));
-}
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
