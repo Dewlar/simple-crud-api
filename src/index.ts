@@ -43,6 +43,32 @@ const server = http.createServer(
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify(user));
         }
+      } else if (req.method === 'PUT' && req.url?.startsWith('/users/')) {
+        const path = req.url;
+        const userId = path.replace('/users/', '');
+        if (isUserValid(res, userId)) {
+          const userIndex = mockUsers.findIndex((currUser) => currUser.id === userId);
+
+          const body = await getParsedBody(req);
+
+          if (isUserType(body)) {
+            mockUsers[userIndex] = {
+              id: userId,
+              ...body,
+            };
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(mockUsers[userIndex]));
+          } else {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(
+              JSON.stringify({
+                message:
+                  'Request body does not contain the required fields or types of the fields do not match the expectations.',
+              })
+            );
+          }
+        }
       } else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(
