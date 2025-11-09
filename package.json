@@ -7,6 +7,7 @@
   "scripts": {
     "start:dev": "nodemon --exec \"ts-node\" src/index.ts",
     "start:prod": "webpack --config webpack.config.mjs && node ./dist/bundle.js",
+    "start:multi": "nodemon --exec \"ts-node\" src/cluster.ts",
     "test": "jest"
   },
   "author": "",
