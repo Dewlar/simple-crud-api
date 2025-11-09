@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "ES2020",
     "module": "NodeNext",
+    "moduleResolution": "Node16",
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
-    "moduleResolution": "NodeNext",
 
-    "allowJs": true,
-    "rootDir": "./src",
+    "esModuleInterop": true,
+//    "rootDir": "./src",
     "outDir": "./dist"
   },
   "include": ["src/**/*"],
-  "ts-node": {
-    "esm": true
-  }
 }

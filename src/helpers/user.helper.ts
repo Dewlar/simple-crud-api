@@ -1,6 +1,6 @@
 import { ServerResponse } from 'http';
 import { validate } from 'uuid';
-import { User } from '../models/user.model.js';
+import { User } from '../models/user.model';
 
 export let mockUsers: User[] = [
   {

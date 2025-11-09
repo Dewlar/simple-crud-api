@@ -1,8 +1,8 @@
 import http, { IncomingMessage, ServerResponse } from 'http';
 import { config } from 'dotenv';
-import { getParsedBody } from './helpers/requests.helper.js';
-import { isUserType, isUserValid, mockUsers, respondWithData, respondWithErrorMessage } from './helpers/user.helper.js';
-import { User } from './models/user.model.js';
+import { getParsedBody } from './helpers/requests.helper';
+import { isUserType, isUserValid, mockUsers, respondWithData, respondWithErrorMessage } from './helpers/user.helper';
+import { User } from './models/user.model';
 import { v4 as uniqId } from 'uuid';
 
 config();
