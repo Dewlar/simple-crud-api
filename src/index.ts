@@ -69,6 +69,17 @@ const server = http.createServer(
             );
           }
         }
+      } else if (req.method === 'DELETE' && req.url?.startsWith('/users/')) {
+        const path = req.url;
+        const userId = path.replace('/users/', '');
+        if (isUserValid(res, userId)) {
+          const userIndex = mockUsers.findIndex((user) => user.id === userId);
+          if (userIndex !== -1) {
+            mockUsers.splice(userIndex, 1);
+            res.writeHead(204);
+            res.end();
+          }
+        }
       } else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(
